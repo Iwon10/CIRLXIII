@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1012">
+<title>CIRLXIII // SPLASH</title>
+<style>
+:root {color-scheme:dark;--bg:#0d1012;--pane:#191e23;--line:#58616c;--light:#f0f3f5;--dark:#737e8c;--muted:#8994a2;--green:#cfd5db}
+* {box-sizing:border-box}
+html,body {margin:0;min-height:100%;background:var(--bg)}
+body {font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;color:var(--light);background:radial-gradient(ellipse at 50% 0%,#292f35 0%,#11161b 56%,#0b0e12 95%);font-size:14px;user-select:none;-webkit-user-select:none}
+button {font:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button:focus-visible {outline:2px dashed var(--light);outline-offset:4px}
+.shell {max-width:980px;margin:auto;padding:18px 15px 42px}
+.top {max-width:780px;margin:0 auto 18px;display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px dashed #707987;padding:0 0 14px}
+.logo {font-size:clamp(19px,4.8vw,33px);font-weight:800;white-space:nowrap;letter-spacing:.02em}
+.subtitle {color:#a0aab7;letter-spacing:.08em;font-size:12px;margin-top:5px}
+.topright {font-size:11px;text-align:right;color:var(--muted);white-space:nowrap}
+.layout {display:flex;align-items:flex-start;justify-content:center;gap:16px}
+.main {flex:0 1 430px;min-width:0}
+.sidebar {flex:0 0 240px;width:240px;display:flex;flex-direction:column;gap:14px}
+.panel {border:1px solid #5b6671;background:linear-gradient(145deg,#1b2229,#151a20);box-shadow:inset 0 1px #ffffff0d,0 12px 36px #0004;padding:13px}
+.line {border-top:1px dashed #5d6876;margin:13px 0}
+.metrics {display:grid;grid-template-columns:1.3fr 1.3fr 1fr;gap:8px;margin-bottom:11px}
+.m {border:1px solid #434c56;background:#171c22;padding:10px 9px;min-width:0}
+.m b {display:block;color:#9da9b7;font-size:11px;font-weight:500;letter-spacing:.11em}
+.m output {display:block;font-size:clamp(16px,4.4vw,23px);font-weight:800;letter-spacing:.02em;font-variant-numeric:tabular-nums;overflow:hidden}
+.gamehead {display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;color:#c4ccd5;font-size:12px;gap:6px}
+.led {color:#f3f5f7;font-weight:800;animation:blink 1.2s steps(1) infinite}
+.gameframe {position:relative;background:#101418;border:1px solid #616b77;padding:7px 0;display:flex;justify-content:center;overflow:hidden;box-shadow:0 0 0 5px #2e38402b,0 20px 36px #0005}
+#board {display:block;margin:0;font:700 clamp(13px,3.2vw,20px)/1.09 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre;letter-spacing:0;tab-size:2;font-variant-ligatures:none;touch-action:none;cursor:crosshair}
+#board .edge {color:#8e9daa}
+#board .empty {color:#28303a}
+#board .light {color:#edf1f4;text-shadow:0 0 2px #eee9}
+#board .dark {color:#818e9d;text-shadow:0 0 2px #9aa5b033}
+#board .ghost {color:#54616e;font-weight:400}
+#board .bubble {text-shadow:0 0 8px currentColor,0 0 15px currentColor}
+#board .fuse1 {animation:blink .27s steps(1) infinite}
+#board .blast {color:white;text-shadow:0 0 10px #fff,0 0 22px #fff;animation:blink .15s steps(1) infinite}
+#board .danger {color:#f2f2f2;background:#333b46}
+@keyframes blink {50%{opacity:.23}}
+@keyframes shake {0%,100%{transform:translate(0,0)}25%{transform:translate(3px,0)}50%{transform:translate(-3px,1px)}75%{transform:translate(2px,-1px)}}
+.gameframe.shake{animation:shake .24s linear}
+.overlay {position:absolute;inset:7px 0;background:#0d1218e9;backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;flex-direction:column;gap:15px;padding:12px;text-align:center}
+.overlay.show {display:flex}
+.overlay pre {font:700 clamp(13px,3vw,20px)/1.3 ui-monospace,Menlo,monospace;margin:0;white-space:pre}
+.overlay .sub {font-size:12px;letter-spacing:.12em;color:#b8c1ca}
+.overlay button {font-weight:800;border:1px solid #e3e8ed;background:#e3e8ed;color:#151b20;padding:11px 28px;font-size:15px}
+.statusbar {margin-top:9px;min-height:35px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#cbd4dd;gap:8px}
+#message {font-weight:800;letter-spacing:.08em;min-width:0}
+#message.pulse {text-shadow:0 0 13px #eef4ff}
+.progress {color:#c4cbd3;white-space:nowrap}
+.tcontrols {margin-top:12px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.ctrl {min-height:61px;border:1px solid #737d8a;background:#242b32;color:#eef2f5;font-weight:800;font-size:21px;box-shadow:inset 0 1px #ffffff1e;white-space:nowrap;padding:0 1px}
+.ctrl:active,.ctrl.held {background:#dce4ec;color:#151a1f;transform:translateY(1px)}
+.ctrl.drop {background:#dee4ea;color:#172026}
+.smallcontrols {display:flex;justify-content:space-between;gap:6px;margin-top:8px}
+.smallcontrols button {background:transparent;color:#aeb9c4;border:1px solid #4f5863;padding:7px 10px;font-size:12px}
+.smallcontrols button:hover{border-color:#b5c1cf;color:white}
+.paneltitle {font-size:12px;font-weight:800;letter-spacing:.16em;margin:0 0 10px;color:#d9e1e8;display:flex;justify-content:space-between}
+.preview {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.nextbox {border:1px solid #46515d;background:#13191f;min-height:107px;padding:8px 9px;display:flex;flex-direction:column;align-items:center;justify-content:space-between}
+.nextbox:first-child {grid-column:1/-1;flex-direction:row;justify-content:center;gap:32px;min-height:108px;border-color:#8794a2;background:#1d252d}
+.nextbox .step {color:#9ba6b2;font-size:11px}
+.nextbox pre {font:800 17px/1.03 ui-monospace,Menlo,Consolas,monospace;margin:0;white-space:pre}
+.nextbox .light {color:#f0f3f5}.nextbox .dark {color:#8290a0}.nextbox .bubble{text-shadow:0 0 7px currentColor}
+.holdpanel pre {font:800 19px/1.05 ui-monospace,Menlo,Consolas,monospace;margin:2px 0 4px;min-height:61px}
+.helprow {display:flex;justify-content:space-between;align-items:center;margin:4px 0;color:#aab4be;font-size:12px}
+.helprow kbd {color:#e4eaf0;font:inherit;font-weight:800}
+.legend {font-size:12px;color:#a9b4c0;line-height:1.9}
+.legend .light {color:#f0f3f5}.legend .dark {color:#8795a4}
+.footer {font-size:11px;color:#798591;max-width:780px;margin:17px auto;text-align:center;letter-spacing:.06em}
+.mobilenext {display:none;margin-top:10px}
+.mobilepreviews{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.mobilepreviews .nextbox{min-height:74px;padding:5px 1px;justify-content:center;gap:5px}
+.mobilepreviews .nextbox:first-child{grid-column:auto;min-height:74px;flex-direction:column;gap:5px}
+.mobilepreviews .nextbox pre{font-size:clamp(12px,3vw,15px);line-height:1}
+.mobilepreviews .nextbox .step{font-size:10px}
+@media(max-width:740px){.shell{max-width:420px;padding:13px 10px 36px}.top{margin-bottom:12px}.topright{display:none}.layout{display:block}.sidebar{display:none}.mobilenext{display:block}.gameframe{padding:5px 0}#board{font-size:clamp(12px,3.6vw,17px)}.metrics{gap:5px}.m{padding:7px 7px}.m output{font-size:clamp(16px,4.2vw,20px)}.tcontrols{gap:5px}.ctrl{min-height:clamp(46px,13vw,58px);font-size:18px}.panel{padding:9px}.subtitle{font-size:10px}.footer{font-size:10px}}
+@media(max-width:355px){#board{font-size:12px}.ctrl{font-size:16px}.logo{font-size:19px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="top">
+  <div><div class="logo">[ CIRLXIII ]</div><div class="subtitle">// SPLASH SYSTEM / ASCII EDITION</div></div>
+  <div class="topright">[ 12 x 20 ]<br>[ 63 SHAPES ]<br>[ 2 SHADES ]</div>
+</header>
+<div class="layout">
+ <main class="main">
+  <div class="metrics">
+   <div class="m"><b>+ POINTS</b><output id="score">000000</output></div>
+   <div class="m"><b>+ RECORD</b><output id="best">000000</output></div>
+   <div class="m"><b>+ CHAIN</b><output id="chain">x00</output></div>
+  </div>
+  <div class="gamehead"><span id="level">LV 01  /  PIECE 63-63</span><span id="danger" aria-live="polite">+-------------+</span></div>
+  <div class="gameframe" id="frame">
+   <pre id="board" role="img" aria-label="ASCII falling-block puzzle board, twelve columns and twenty rows" tabindex="0">+------------------------+
+|                        |
++------------------------+</pre>
+   <div id="overlay" class="overlay show" aria-live="polite">
+    <pre id="overlayart">+----------------+
+|  C I R L X I I I |
+|     SPLASH     |
++----------------+</pre>
+    <div class="sub" id="overlaysub">MATCH 3x3 // TRIGGER WAVES</div>
+    <button id="overlaybutton" type="button">[ START ]</button>
+   </div>
+  </div>
+  <div class="statusbar"><span id="message" aria-live="polite">READY_</span><span class="progress" id="status">O--O  FUSE: 02</span></div>
+  <div class="tcontrols" aria-label="Touch controls">
+   <button class="ctrl" type="button" id="left" aria-label="Move left">[&lt;]</button>
+   <button class="ctrl" type="button" id="right" aria-label="Move right">[&gt;]</button>
+   <button class="ctrl" type="button" id="rotate" aria-label="Rotate clockwise">[^]</button>
+   <button class="ctrl" type="button" id="down" aria-label="Soft drop">[v]</button>
+   <button class="ctrl drop" type="button" id="drop" aria-label="Hard drop">[vv]</button>
+   <button class="ctrl" type="button" id="hold" aria-label="Hold or swap piece">[H]</button>
+  </div>
+  <div class="smallcontrols">
+    <button id="pause" type="button">[II] PAUSE</button>
+    <button id="sound" type="button" aria-pressed="true">[M] SOUND:ON</button>
+    <button id="restart" type="button">[R] RESET</button>
+  </div>
+  <section class="mobilenext panel" aria-label="Next five pieces">
+    <div class="paneltitle"><span>+ NEXT 05</span><span>O = BOMB</span></div>
+    <div id="mobilepreview" class="mobilepreviews"></div>
+  </section>
+ </main>
+ <aside class="sidebar">
+   <section class="panel"><div class="paneltitle"><span>+ NEXT_05</span><span>[&gt;&gt;]</span></div><div class="preview" id="preview"></div></section>
+   <section class="panel holdpanel"><div class="paneltitle"><span>+ HOLD</span><span>[H]</span></div><pre id="holdpreview">  --
+  --
+  --</pre><div id="holdtext" class="helprow">EMPTY</div></section>
+   <section class="panel"><div class="paneltitle">+ SYSTEM</div><div class="legend"><span class="light">[]</span> LIGHT<br><span class="dark">##</span> DARK<br>() / {} WATER BOMB<br>3x3 = CROSS SPLASH<br>BOMBS = 02 LOCK FUSE<br>HIT BOMB = CHAIN BLAST</div><div class="line"></div><div class="helprow"><kbd>LEFT / RIGHT</kbd>MOVE</div><div class="helprow"><kbd>ENTER / UP</kbd>ROTATE</div><div class="helprow"><kbd>DOWN</kbd>SOFT</div><div class="helprow"><kbd>SPACE</kbd>DROP</div><div class="helprow"><kbd>H / C</kbd>HOLD</div><div class="helprow"><kbd>P / R</kbd>PAUSE / RESET</div><div class="helprow"><kbd>M</kbd>SOUND</div></section>
+ </aside>
+</div>
+<div class="footer">CIRLXIII // INDEPENDENT PUZZLE // NO NETWORK REQUIRED</div>
+</div>
+<script>
+'use strict';
+(() => {
+const W=12,H=20,PREVIEW=5,FALL=850,WAVE_MS=335,SETTLE_MS=175;
+const $=id=>document.getElementById(id);
+const ui={board:$('board'),frame:$('frame'),overlay:$('overlay'),art:$('overlayart'),sub:$('overlaysub'),overlayButton:$('overlaybutton'),score:$('score'),best:$('best'),chain:$('chain'),level:$('level'),danger:$('danger'),message:$('message'),status:$('status'),pause:$('pause'),sound:$('sound'),holdpreview:$('holdpreview'),holdtext:$('holdtext')};
+const testMode=new URLSearchParams(location.search).has('test');
+const requestedSeed=Number(new URLSearchParams(location.search).get('seed'));
+const game={board:new Uint8Array(W*H),fuse:new Uint8Array(W*H),current:null,queue:[],held:null,heldUsed:false,created:0,locks:0,streak:1,seed:1,score:0,best:0,chain:0,maxChain:0,phase:'ready',rot:0,x:5,y:0,nextFall:0,waveEnd:0,settleEnd:0,plan:null,soundOn:true,message:'READY_',messageEnd:0,clearCount:0,lastFrame:'',lastPreview:'',lastStats:''};
+const idx=(x,y)=>y*W+x;
+function seedSet(s){game.seed=(s>>>0)||0x9e3779b9}
+function random(){let x=game.seed;x^=x<<13;x^=x>>>17;x^=x<<5;game.seed=x>>>0;return game.seed/4294967296}
+function bestRead(){try{return Number(localStorage.getItem('CIRLXIII_ASCII_SPLASH_BEST'))||0}catch{return 0}}
+function bestWrite(){try{localStorage.setItem('CIRLXIII_ASCII_SPLASH_BEST',String(game.best))}catch{}}
+function positions(mask,rot,x=0,y=0){const a=[];for(let bit=0;bit<6;bit++)if(mask&(1<<bit)){let dx=bit%2,dy=Math.floor(bit/2),px,py;switch(rot&3){case 0:px=dx;py=dy;break;case 1:px=2-dy;py=dx;break;case 2:px=1-dx;py=2-dy;break;default:px=dy;py=1-dx}a.push({x:x+px,y:y+py,bit})}return a}
+function makePiece(){const ordinal=game.created++,mask=63-(ordinal%63);if(ordinal%3===0)game.streak=1+(random()<.5?0:1);const color=(ordinal%3===0||random()<.85)?game.streak:3-game.streak;const bits=positions(mask,0);const bombBit=ordinal%3===2?bits[Math.floor(random()*bits.length)].bit:-1;return {mask,color,bombBit,number:mask}}
+function fits(x,y,rot){if(!game.current)return false;for(const cell of positions(game.current.mask,rot,x,y)){if(cell.x<0||cell.x>=W||cell.y<0||cell.y>=H||game.board[idx(cell.x,cell.y)])return false}return true}
+function fillQueue(){while(game.queue.length<PREVIEW+1)game.queue.push(makePiece())}
+function spawn(now,fromHold=false){if(!fromHold){fillQueue();game.current=game.queue.shift();fillQueue();game.heldUsed=false}
+ game.rot=0;game.x=5;game.y=0;game.nextFall=now+fallMs();if(!fits(game.x,game.y,game.rot)){game.phase='over';game.message='GAME OVER_';updateOverlay()}}
+function fallMs(){return Math.max(320,FALL-Math.floor(game.locks/12)*65)}
+function reset(seed=Number.isFinite(requestedSeed)&&requestedSeed>0?requestedSeed:Date.now()>>>0,ready=true){game.board.fill(0);game.fuse.fill(0);game.queue=[];game.current=null;game.held=null;game.heldUsed=false;game.created=0;game.locks=0;game.score=0;game.chain=0;game.maxChain=0;game.clearCount=0;game.plan=null;game.lastPreview='';game.lastStats='';game.lastFrame='';game.streak=1;seedSet(seed);game.phase=ready?'ready':'play';game.message=ready?'READY_':'GO_';game.messageEnd=0;spawn(performance.now());if(ready&&game.phase!=='over')game.phase='ready';updateOverlay();render(true)}
+function start(now){if(game.phase==='over'){reset(undefined,false)}else if(game.phase==='ready'){game.phase='play';game.nextFall=now+fallMs();game.message='GO_'}else if(game.phase==='paused'){game.phase=game.resumePhase||'play';if(game.phase==='flash')game.waveEnd=now+WAVE_MS;if(game.phase==='settle')game.settleEnd=now+SETTLE_MS;game.nextFall=now+fallMs();game.message='RESUME_'}updateOverlay();render(true)}
+function toast(message,now=performance.now(),duration=1500){game.message=message;game.messageEnd=now+duration}
+function addCross(hit,visual,cx,cy,radius){for(let d=-radius;d<=radius;d++){const x=cx+d,y=cy+d;if(x>=0&&x<W){hit.add(idx(x,cy));visual.add(idx(x,cy))}if(y>=0&&y<H){hit.add(idx(cx,y));visual.add(idx(cx,y))}}}
+function squares(){const found=[];for(let y=H-3;y>=0;y--)for(let x=0;x<=W-3;x++){const color=game.board[idx(x,y)];if(!color)continue;let ok=true;for(let j=0;j<3&&ok;j++)for(let i=0;i<3;i++)if(game.board[idx(x+i,y+j)]!==color){ok=false;break}if(ok)found.push({x,y,color})}return found}
+function calculateWave(){const sq=squares(),due=[];for(let p=0;p<game.fuse.length;p++)if(game.fuse[p]===255&&game.board[p])due.push(p);
+ if(!sq.length&&!due.length)return null;
+ const hit=new Set(),visual=new Set(),bombs=new Set(),toBomb=[...due];
+ for(const s of sq){for(let dy=0;dy<3;dy++)for(let dx=0;dx<3;dx++){const p=idx(s.x+dx,s.y+dy);hit.add(p);visual.add(p)}addCross(hit,visual,s.x+1,s.y+1,2)}
+ const seen=new Set();
+ while(true){for(const p of hit)if(game.fuse[p]&&game.board[p]&&!seen.has(p))toBomb.push(p);if(!toBomb.length)break;const p=toBomb.pop();if(seen.has(p)||!game.board[p])continue;seen.add(p);bombs.add(p);addCross(hit,visual,p%W,Math.floor(p/W),3)}
+ return {sq,hit,visual,bombs,removed:[...hit].filter(p=>game.board[p]!==0).length};}
+function playWave(now){const plan=calculateWave();if(!plan)return false;game.plan=plan;game.phase='flash';game.waveEnd=now+WAVE_MS;game.chain++;game.maxChain=Math.max(game.chain,game.maxChain);const bonus=plan.bombs.size>1?' BOMBS x'+plan.bombs.size:'';toast('~ WAVE x'+game.chain+bonus+' ~',now,WAVE_MS+SETTLE_MS);splashSound(plan.bombs.size,plan.sq.length);if(plan.bombs.size>0){ui.frame.classList.remove('shake');void ui.frame.offsetWidth;ui.frame.classList.add('shake');if(typeof navigator.vibrate==='function'&&!testMode)navigator.vibrate(Math.min(110,25+plan.bombs.size*22))}render(true);return true}
+function gravity(){for(let x=0;x<W;x++){let dest=H-1;for(let y=H-1;y>=0;y--){const p=idx(x,y);if(game.board[p]){const dp=idx(x,dest--);game.board[dp]=game.board[p];game.fuse[dp]=game.fuse[p];if(dp!==p){game.board[p]=0;game.fuse[p]=0}}}for(;dest>=0;dest--){game.board[idx(x,dest)]=0;game.fuse[idx(x,dest)]=0}}}
+function finishWave(now){const plan=game.plan;if(!plan)return;for(const p of plan.hit){game.board[p]=0;game.fuse[p]=0}const added=plan.removed*15*game.chain+plan.sq.length*60*game.chain+plan.bombs.size*45*game.chain;game.score+=added;game.clearCount+=plan.removed;if(game.score>game.best){game.best=game.score;if(!testMode)bestWrite()}gravity();game.phase='settle';game.settleEnd=now+SETTLE_MS;toast('+'+String(added).padStart(4,'0')+'  /  CHAIN '+game.chain,now,1700);render(true)}
+function finishSettle(now){game.plan=null;if(!playWave(now)){if(game.chain>1)toast('CHAIN x'+game.chain+'  //  COMPLETE',now,2400);game.chain=0;spawn(now);if(game.phase!=='over')game.phase='play';render(true)}}
+function lock(now){const current=game.current;for(let i=0;i<game.fuse.length;i++)if(game.fuse[i]===1)game.fuse[i]=255;else if(game.fuse[i]>1&&game.fuse[i]!==255)game.fuse[i]--;
+ for(const c of positions(current.mask,game.rot,game.x,game.y)){const p=idx(c.x,c.y);game.board[p]=current.color;game.fuse[p]=(c.bit===current.bombBit)?2:0}game.locks++;game.chain=0;game.heldUsed=false;if(!playWave(now)){spawn(now);render(true)}}
+function move(dx){if(game.phase==='play'&&fits(game.x+dx,game.y,game.rot)){game.x+=dx;render(true)}}
+function down(now){if(game.phase!=='play')return;if(fits(game.x,game.y+1,game.rot)){game.y++;game.nextFall=now+fallMs();render(true)}else lock(now)}
+function rotate(){if(game.phase!=='play')return;const nr=(game.rot+1)&3;for(const [dx,dy] of [[0,0],[-1,0],[1,0],[-2,0],[2,0],[0,-1],[0,-2]]){if(fits(game.x+dx,game.y+dy,nr)){game.x+=dx;game.y+=dy;game.rot=nr;render(true);return}}}
+function hardDrop(now){if(game.phase!=='play')return;while(fits(game.x,game.y+1,game.rot))game.y++;lock(now)}
+function hold(now){if(game.phase!=='play'||game.heldUsed)return;const old=game.current;if(game.held){game.current=game.held;game.held=old;spawn(now,true)}else{game.held=old;spawn(now)}game.heldUsed=true;if(game.phase!=='over')toast('HOLD_',now,900);render(true)}
+function pause(now){if(game.phase==='ready'){start(now);return}if(game.phase==='play'||game.phase==='flash'||game.phase==='settle'){game.resumePhase=game.phase;game.phase='paused';game.message='PAUSED_'}else if(game.phase==='paused'){game.phase=game.resumePhase||'play';game.nextFall=now+fallMs();game.waveEnd=now+WAVE_MS;game.settleEnd=now+SETTLE_MS;toast('RESUME_',now,900)}updateOverlay();render(true)}
+function updateOverlay(){const show=['ready','paused','over'].includes(game.phase);ui.overlay.classList.toggle('show',show);if(!show)return;if(game.phase==='ready'){ui.art.textContent='+-----------------+\n|   C I R L X I I I |\n|   ~ S P L A S H ~ |\n+-----------------+';ui.sub.textContent='3 x 3  +  TIMED WATER BOMBS';ui.overlayButton.textContent='[ START ]'}else if(game.phase==='paused'){ui.art.textContent='+-----------------+\n|    PAUSED //    |\n+-----------------+';ui.sub.textContent='';ui.overlayButton.textContent='[ RESUME ]'}else{ui.art.textContent='+-----------------+\n|    GAME OVER    |\n+-----------------+';ui.sub.textContent='POINTS '+String(game.score).padStart(6,'0');ui.overlayButton.textContent='[ RETRY ]'}}
+function htmlEscape(s){return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}
+function tileHtml(value,isBomb=0,kind='fixed'){if(kind==='blast')return '<span class="blast">~~</span>';if(kind==='ghost')return '<span class="ghost">..</span>';if(!value)return '<span class="empty"> .</span>';const cls=value===1?'light':'dark';if(isBomb){const txt=value===1?'()':'{}';return '<span class="'+cls+' bubble'+(isBomb===1?' fuse1':'')+'">'+txt+'</span>'}return '<span class="'+cls+'">'+(value===1?'[]':'##')+'</span>'}
+function asciiPiece(piece){if(!piece)return '--\n--\n--';const rows=Array.from({length:3},()=>['  ','  ','  ']);for(const p of positions(piece.mask,0)){const bomb=p.bit===piece.bombBit;rows[p.y][p.x]=tileHtml(piece.color,bomb?2:0)}return rows.map(r=>r.join('')).join('\n')}
+function preview(){const currentKey=[game.queue.map(p=>p.mask+','+p.color+','+p.bombBit).join('/'),game.held?game.held.mask+','+game.held.color+','+game.held.bombBit:'-',game.heldUsed].join('|');if(currentKey===game.lastPreview)return;game.lastPreview=currentKey;const html=game.queue.slice(0,5).map((p,i)=>'<div class="nextbox"><span class="step">'+String(i+1).padStart(2,'0')+' / '+String(p.mask).padStart(2,'0')+'</span><pre>'+asciiPiece(p)+'</pre></div>').join('');$('preview').innerHTML=html;$('mobilepreview').innerHTML=html;ui.holdpreview.innerHTML=asciiPiece(game.held);ui.holdtext.textContent=game.held?'['+String(game.held.mask).padStart(2,'0')+']'+(game.heldUsed?'  LOCKED':'  READY'):'--  EMPTY'}
+function draw(){const board=game.board,lines=[];const blasts=game.phase==='flash'&&game.plan?game.plan.visual:null;lines.push('<span class="edge">+'+'--'.repeat(W)+'+</span>');let ghostY=game.y;if(game.current&&game.phase==='play'){while(fits(game.x,ghostY+1,game.rot))ghostY++}const active=new Map(),ghost=new Set();if(game.current&&['play','ready','paused'].includes(game.phase)){for(const c of positions(game.current.mask,game.rot,game.x,ghostY))ghost.add(idx(c.x,c.y));for(const c of positions(game.current.mask,game.rot,game.x,game.y))active.set(idx(c.x,c.y),c.bit)}
+ for(let y=0;y<H;y++){const row=['<span class="edge">|</span>'];for(let x=0;x<W;x++){const p=idx(x,y);if(blasts&&blasts.has(p))row.push(tileHtml(0,0,'blast'));else if(active.has(p)){row.push(tileHtml(game.current.color,active.get(p)===game.current.bombBit?2:0))}else if(board[p])row.push(tileHtml(board[p],game.fuse[p]===255?1:game.fuse[p]));else if(ghost.has(p)&&game.phase==='play')row.push(tileHtml(0,0,'ghost'));else row.push(tileHtml(0))}row.push('<span class="edge">|</span>');lines.push(row.join(''))}lines.push('<span class="edge">+'+'--'.repeat(W)+'+</span>');return lines.join('\n')}
+function render(force=false){const frame=draw();if(frame!==game.lastFrame||force){ui.board.innerHTML=frame;game.lastFrame=frame}const stat=game.score+'|'+game.best+'|'+game.chain+'|'+game.created+'|'+game.locks+'|'+game.message+'|'+game.phase;if(stat!==game.lastStats||force){ui.score.textContent=String(game.score).padStart(6,'0');ui.best.textContent=String(game.best).padStart(6,'0');ui.chain.textContent='x'+String(game.chain).padStart(2,'0');ui.level.textContent='LV '+String(1+Math.floor(game.locks/12)).padStart(2,'0')+'  /  PIECE '+String(game.current?.mask||0).padStart(2,'0')+'-63';const danger=game.board.slice(0,4*W).some(Boolean);ui.danger.textContent=danger?'!!! TOP ZONE !!!':'< NO LIMIT >';ui.danger.classList.toggle('led',danger);ui.message.textContent=game.message;ui.message.classList.toggle('pulse',game.phase==='flash');const bombCount=game.fuse.filter(v=>v>0).length;ui.status.textContent='O '+bombCount+'  /  '+(game.phase==='flash'?'~~~~~~~':game.phase==='settle'?'FALLING_':game.phase==='over'?'STOP_':'FUSE: 02');ui.pause.textContent=game.phase==='paused'?'[>] RESUME':'[II] PAUSE';game.lastStats=stat}preview()}
+let audio=null;
+function audioStart(){if(testMode||!game.soundOn)return null;try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;audio=audio||new C();if(audio.state==='suspended')audio.resume().catch(()=>{});return audio}catch{return null}}
+function tone(freq,start,duration,vol=0.045,kind='sine'){const a=audioStart();if(!a)return;const osc=a.createOscillator(),gain=a.createGain();osc.type=kind;osc.frequency.setValueAtTime(freq,a.currentTime+start);osc.frequency.exponentialRampToValueAtTime(Math.max(90,freq*.53),a.currentTime+start+duration);gain.gain.setValueAtTime(0.0001,a.currentTime+start);gain.gain.exponentialRampToValueAtTime(vol,a.currentTime+start+.016);gain.gain.exponentialRampToValueAtTime(.0001,a.currentTime+start+duration);osc.connect(gain).connect(a.destination);osc.start(a.currentTime+start);osc.stop(a.currentTime+start+duration+.04)}
+function splashSound(bombs,sq){if(testMode||!game.soundOn)return;tone(bombs?210:380,0,.24,.048,'triangle');tone(490,.10,.19,.036,'sine');if(bombs>1)tone(620,.18,.23,.046,'triangle');if(sq>0)tone(750,.22,.22,.036,'sine')}
+function action(type){const now=performance.now();if(type!=='sound'&&type!=='restart'&&type!=='pause'&&type!=='start')audioStart();switch(type){case 'start':start(now);break;case 'left':move(-1);break;case 'right':move(1);break;case 'rotate':rotate();break;case 'down':down(now);break;case 'drop':hardDrop(now);break;case 'hold':hold(now);break;case 'pause':pause(now);break;case 'restart':reset(undefined,false);break;case 'sound':game.soundOn=!game.soundOn;ui.sound.textContent=game.soundOn?'[M] SOUND:ON':'[M] SOUND:OFF';ui.sound.setAttribute('aria-pressed',String(game.soundOn));if(game.soundOn)tone(540,0,.14,.025);break}render(true)}
+ui.overlayButton.addEventListener('click',()=>action('start'));
+for(const name of ['pause','restart','sound'])$(name).addEventListener('click',()=>action(name));
+// Long-press repeats movement, making the ASCII board playable on touchscreens.
+for(const name of ['left','right','rotate','down','drop','hold']){const el=$(name);let timer=null,delay=null;const stop=()=>{clearTimeout(delay);clearInterval(timer);delay=timer=null;el.classList.remove('held')};el.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;e.preventDefault();action(name);el.classList.add('held');if(name==='left'||name==='right'||name==='down'){delay=setTimeout(()=>{timer=setInterval(()=>action(name),name==='down'?58:83)},270)}try{el.setPointerCapture(e.pointerId)}catch{}});el.addEventListener('pointerup',stop);el.addEventListener('pointercancel',stop);el.addEventListener('lostpointercapture',stop);el.addEventListener('contextmenu',e=>e.preventDefault())}
+document.addEventListener('keydown',e=>{const controls={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowDown:'down',KeyS:'down',ArrowUp:'rotate',Enter:'rotate',Space:'drop',KeyH:'hold',KeyC:'hold',KeyP:'pause',KeyR:'restart',KeyM:'sound'};const type=controls[e.code];if(!type)return;e.preventDefault();if(e.repeat&&!['left','right','down'].includes(type))return;if(game.phase==='ready'&&['drop','rotate','down'].includes(type)){action('start');return}if(game.phase==='over'&&type==='drop'){action('restart');return}action(type)});
+let gesture=null;ui.board.addEventListener('pointerdown',e=>{gesture={x:e.clientX,y:e.clientY};try{ui.board.setPointerCapture(e.pointerId)}catch{}});ui.board.addEventListener('pointerup',e=>{if(!gesture)return;const dx=e.clientX-gesture.x,dy=e.clientY-gesture.y;gesture=null;if(game.phase==='ready'){action('start');return}if(Math.abs(dx)<18&&Math.abs(dy)<18){action('rotate');return}if(Math.abs(dx)>Math.abs(dy)){for(let i=0;i<Math.min(5,Math.max(1,Math.round(Math.abs(dx)/24)));i++)action(dx<0?'left':'right')}else if(dy>55)action('drop');else if(dy>12)action('down');else if(dy< -22)action('hold')});ui.board.addEventListener('pointercancel',()=>gesture=null);
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&['play','flash','settle'].includes(game.phase)){game.resumePhase=game.phase;game.phase='paused';updateOverlay();render(true)}});
+let previousTime=0;function loop(now){if(!testMode&&now-previousTime>12){previousTime=now;if(game.phase==='play'&&now>=game.nextFall)down(now);else if(game.phase==='flash'&&now>=game.waveEnd)finishWave(now);else if(game.phase==='settle'&&now>=game.settleEnd)finishSettle(now);if(game.messageEnd&&now>game.messageEnd){game.message='FUSE / 3x3 / CHAIN';game.messageEnd=0}render()}requestAnimationFrame(loop)}
+// Browser-only deterministic regression test: add ?test=1 to the URL.
+function tests(){const check=(ok,msg)=>{if(!ok)throw Error(msg)};const sq=(x,y,color)=>{for(let dy=0;dy<3;dy++)for(let dx=0;dx<3;dx++)game.board[idx(x+dx,y+dy)]=color};let count=0;const test=(name,fn)=>{fn();count++;return name};
+ try{
+  test('63 shapes and rotations',()=>{reset(100,false);const first=[game.current,...game.queue];const rest=Array.from({length:63-first.length},()=>makePiece());const all=[...first,...rest],seen=new Set();for(const a of all){seen.add(a.mask);for(let rot=0;rot<4;rot++){const pos=positions(a.mask,rot);check(pos.length>0&&pos.length<=6,'cell count');check(new Set(pos.map(c=>c.x+','+c.y)).size===pos.length,'duplicate');check(pos.every(c=>c.x>=0&&c.x<3&&c.y>=0&&c.y<3),'rotation bounds')}check(a.color===1||a.color===2,'color')}check(seen.size===63,'all masks')});
+  test('3x3 and two tones',()=>{reset(101,false);game.board.fill(0);sq(0,17,1);sq(9,17,2);check(squares().length===2,'two squares');game.board[idx(11,19)]=1;check(squares().length===1,'mixed square cannot match')});
+  test('bomb fuse and cross extent',()=>{reset(102,false);game.board.fill(0);game.fuse.fill(0);const p=idx(6,10);game.board[p]=1;game.fuse[p]=255;game.board[idx(9,10)]=2;game.board[idx(10,10)]=2;const plan=calculateWave();check(plan.bombs.size===1,'one bomb');check(plan.hit.has(idx(9,10)),'radius three');check(!plan.hit.has(idx(10,10)),'radius four excluded')});
+  test('bomb chain reaction',()=>{reset(103,false);game.board.fill(0);game.fuse.fill(0);game.board[idx(3,7)]=1;game.fuse[idx(3,7)]=255;game.board[idx(6,7)]=2;game.fuse[idx(6,7)]=2;game.board[idx(9,7)]=1;const plan=calculateWave();check(plan.bombs.size===2,'two bombs chain');check(plan.hit.has(idx(9,7)),'second bomb cross')});
+  test('square triggers adjacent bomb',()=>{reset(104,false);game.board.fill(0);game.fuse.fill(0);sq(3,8,1);game.board[idx(6,9)]=2;game.fuse[idx(6,9)]=2;const plan=calculateWave();check(plan.sq.length===1,'one square');check(plan.bombs.size===1,'square shock hit bomb');check(plan.hit.has(idx(9,9)),'balloon cross')});
+  test('gravity carries bombs',()=>{reset(105,false);game.board.fill(0);game.fuse.fill(0);game.board[idx(3,1)]=1;game.fuse[idx(3,1)]=2;game.board[idx(3,12)]=2;gravity();check(game.board[idx(3,19)]===2&&game.board[idx(3,18)]===1,'gravity colors');check(game.fuse[idx(3,18)]===2,'gravity fuse')});
+  test('resolve scores & cascades',()=>{reset(106,false);game.board.fill(0);game.fuse.fill(0);sq(3,17,1);const plan=calculateWave();check(!!plan,'square plan');game.plan=plan;game.chain=1;finishWave(0);check(game.score>=135&&game.board.every(v=>v===0),'score and removal');check(game.phase==='settle','settle')});
+  test('spawn game over',()=>{reset(107,false);game.board[idx(5,0)]=2;game.current={mask:63,color:1,bombBit:-1};spawn(0,true);check(game.phase==='over','top-out')});
+  test('hold only once',()=>{reset(108,false);const previous=game.current.mask;hold(0);check(game.held.mask===previous&&game.heldUsed,'held');const active=game.current.mask;hold(0);check(game.current.mask===active,'double-hold disabled')});
+  test('pause resumes the correct resolution stage',()=>{reset(113,false);sq(0,17,1);check(playWave(100),'square wave');pause(120);check(game.phase==='paused'&&game.resumePhase==='flash','paused in flash');start(130);check(game.phase==='flash','resume flash');finishWave(200);pause(210);check(game.resumePhase==='settle','paused in settle');start(220);check(game.phase==='settle','resume settle')});
+  test('queue preview and board size',()=>{reset(109,false);check(game.board.length===240&&game.queue.length>=5,'dimensions and queue');check(draw().includes('--'.repeat(W)),'ASCII board')});
+  test('full game loops 2000 random locks and waves',()=>{reset(110,false);for(let n=0;n<2000;n++){game.board.fill(0);game.fuse.fill(0);for(let p=0;p<W*H;p++)game.board[p]=Math.floor(random()*3);for(let p=0;p<45;p++)if(game.board[p])game.fuse[p]=random()<.07?255:0;const plan=calculateWave();if(plan){game.plan=plan;game.chain=1;finishWave(0);check(game.board.every(v=>v===0||v===1||v===2),'board value');for(let x=0;x<W;x++){let gap=false;for(let y=H-1;y>=0;y--){if(!game.board[idx(x,y)])gap=true;else check(!gap,'compacted column')}}}}});
+  reset(111,true);const p=document.createElement('pre');p.id='test-results';p.textContent='PASS: '+count+' tests (63 shapes, two tones, 3x3, splashes, bomb chains, gravity, scoring, hold, game over, 2000 boards)';document.body.append(p);document.body.dataset.test='PASS';return p.textContent;
+ }catch(e){const p=document.createElement('pre');p.id='test-results';p.textContent='FAIL: '+e.stack;document.body.append(p);document.body.dataset.test='FAIL';console.error(e);return p.textContent}}
+game.best=bestRead();reset(undefined,true);if(testMode)console.log(tests());if(!testMode)requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
